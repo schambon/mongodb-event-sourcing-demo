@@ -1,0 +1,10 @@
+{
+    "name": "demos",
+    "type": "mongodb-atlas",
+    "config": {
+        "clusterName": "demos",
+        "readPreference": "primary",
+        "wireProtocolEnabled": false
+    },
+    "version": 1
+}

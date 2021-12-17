@@ -1,0 +1,25 @@
+{
+    "name": "updateWidget",
+    "type": "DATABASE",
+    "config": {
+        "operation_types": [
+            "INSERT"
+        ],
+        "database": "eventstore",
+        "collection": "events",
+        "service_name": "demos",
+        "match": {},
+        "project": {},
+        "full_document": false,
+        "full_document_before_change": false,
+        "unordered": false
+    },
+    "disabled": false,
+    "event_processors": {
+        "FUNCTION": {
+            "config": {
+                "function_name": "updateWidget"
+            }
+        }
+    }
+}
