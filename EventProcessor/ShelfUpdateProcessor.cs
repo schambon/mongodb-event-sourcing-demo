@@ -40,7 +40,8 @@ public class ShelfUpdateProcessor : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var tokenList = _changeTrackingCollection.Find(Builders<BsonDocument>.Filter.Eq("_id", "ShelfUpdateProcessor")).Limit(1).ToList();
-
+        _logger.LogInformation("Found token list: {}", tokenList);
+        
         var csOptions = new ChangeStreamOptions();
         if (tokenList.Count == 1)
         {

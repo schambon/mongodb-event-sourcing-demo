@@ -1,17 +1,21 @@
 
-using EventProcessor.Models;
+
 using MongoDB.Driver;
-using Microsoft.Extensions.Options;
+using EventProcessor.Models;
 
 namespace EventProcessor.Services;
 
 
 public class MongoDBService
 {
+    private readonly ILogger<MongoDBService> _logger;
+
     public MongoClient MongoClient { get; }
 
-    public MongoDBService(IOptions<EventProcessor.Models.MongoDatabaseSettings> settings)
+    public MongoDBService(ILogger<MongoDBService> logger, MongoConnectionSettings settings)
     {
-        MongoClient = new MongoClient(settings.Value.ConnectionString);
+        _logger = logger;
+        MongoClient = new MongoClient(settings.ConnectionString);
+        _logger.LogInformation("Connected to {}", settings.ConnectionString);
     }
 }

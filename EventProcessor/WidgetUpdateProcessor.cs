@@ -36,7 +36,7 @@ public class WidgetUpdateProcessor : BackgroundService
         }
         catch(MongoCommandException)
         {
-            _logger.LogDebug("Cannot create change tracking collection, likely because it already exists");
+            _logger.LogWarning("Cannot create change tracking collection, likely because it already exists");
             // this simply means the change tracking collection already exists. It's fine.
             // note we want the collection to exist before entering change processing, otherwise 
             // transactions may fail if both change stream processors try to create the collection
@@ -49,10 +49,14 @@ public class WidgetUpdateProcessor : BackgroundService
         _widgetCollection = mongoService.MongoClient
                                 .GetDatabase(widgetStoreDatabaseSettings.DatabaseName)
                                 .GetCollection<BsonDocument>(widgetStoreDatabaseSettings.CollectionName);
+
+        _logger.LogInformation("WidgetUpdateProcessor started. Event namespace: {}.{}", eventStoreSettings.DatabaseName, eventStoreSettings.CollectionName);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        _logger.LogInformation("Event collection has now {} events", _eventCollection.CountDocuments(Builders<Event>.Filter.Empty));
+
         var tokenList = _changeTrackingCollection.Find(Builders<BsonDocument>.Filter.Eq("_id", "WidgetUpdateProcessor")).Limit(1).ToList();
 
         var csOptions = new ChangeStreamOptions();
@@ -62,7 +66,7 @@ public class WidgetUpdateProcessor : BackgroundService
         }
         var pipeline = 
             new EmptyPipelineDefinition<ChangeStreamDocument<Event>>()
-            .Match(x => x.OperationType == ChangeStreamOperationType.Insert);
+           .Match(x => x.OperationType == ChangeStreamOperationType.Insert);
 
         using (var cursor = await _eventCollection.WatchAsync(pipeline, csOptions)) {
             await cursor.ForEachAsync(change => {

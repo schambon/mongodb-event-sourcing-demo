@@ -1,6 +1,6 @@
 namespace EventProcessor.Models;
 
-public class MongoDatabaseSettings
+public class MongoConnectionSettings
 {
     public string ConnectionString { get; set; } = "mongodb://localhost:27017";
 
